@@ -1,0 +1,13 @@
+# OS / editor
+.DS_Store
+.ipynb_checkpoints/
+
+# private data
+data/raw/
+
+# ad-hoc outputs
+snaps/
+
+# secrets
+.env
+.env.*
