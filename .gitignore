@@ -11,3 +11,6 @@ snaps/
 # secrets
 .env
 .env.*
+
+# Some experimental stuff for ad-hoc tests
+experiments/
