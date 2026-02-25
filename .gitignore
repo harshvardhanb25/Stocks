@@ -14,3 +14,10 @@ snaps/
 
 # Some experimental stuff for ad-hoc tests
 experiments/
+
+# Build/Packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
