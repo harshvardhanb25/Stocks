@@ -14,6 +14,24 @@ def load_and_clean_nse_eq_master(path: str) -> pd.DataFrame:
     # Fixing some dataset specific naming style
     df = df.rename(columns={"isin_number": "isin", "date_of_listing": "list_date"})
 
+    # Convert lisitng dates to datetime
+    df = df.pipe(convert_dates, column_name="list_date")
+
+    return df
+
+
+def load_and_clean_nse_etf_master(path: str) -> pd.DataFrame:
+    """Loads and cleans a cleaned nse master csv for equities as a dataframe"""
+
+    # Load the csv containing nse master data
+    df = pd.read_csv(path)
+
+    # Normalize column headers and fix any string values
+    df = df.pipe(normalize_column_headers).pipe(strip_string_values)
+
+    df = df.rename(columns={"isinnumber": "isin", "dateof_listing": "list_date"})
+
+    # Convert listing dates to datetime
     df = df.pipe(convert_dates, column_name="list_date")
 
     return df

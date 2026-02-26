@@ -1,6 +1,7 @@
 # OS / editor
 .DS_Store
 .ipynb_checkpoints/
+.vscode/
 
 # private data
 data/raw/
