@@ -24,3 +24,23 @@ def strip_string_values(df: pd.DataFrame) -> pd.DataFrame:
         df[col] = df[col].map(lambda x: x.strip() if isinstance(x, str) else x)
 
     return df
+
+
+def convert_dates(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
+    """Convert dates to a datetime object"""
+    df = df.copy()
+
+    s = df[column_name]
+
+    dt = pd.to_datetime(
+        s, format="%d-%b-%y", errors="coerce"
+    )  # Try parsing with 2-digit year first
+    dt = dt.fillna(
+        pd.to_datetime(s, format="%d-%b-%Y", errors="coerce")
+    )  # If that fails, try parsing with 4-digit year
+
+    df[column_name] = dt
+
+    assert df[column_name].notna().all()
+
+    return df

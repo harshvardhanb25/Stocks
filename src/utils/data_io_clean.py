@@ -1,5 +1,5 @@
 import pandas as pd
-from .preprocessing import normalize_column_headers, strip_string_values
+from .preprocessing import normalize_column_headers, strip_string_values, convert_dates
 
 
 def load_and_clean_nse_eq_master(path: str) -> pd.DataFrame:
@@ -14,5 +14,6 @@ def load_and_clean_nse_eq_master(path: str) -> pd.DataFrame:
     # Fixing some dataset specific naming style
     df = df.rename(columns={"isin_number": "isin", "date_of_listing": "list_date"})
 
-    # TODO: Fix dates
+    df = df.pipe(convert_dates, column_name="list_date")
+
     return df
