@@ -38,7 +38,9 @@ def convert_dates(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
     dt = dt.fillna(
         pd.to_datetime(s, format="%d-%b-%Y", errors="coerce")
     )  # If that fails, try parsing with 4-digit year
-
+    dt = dt.fillna(
+        pd.to_datetime(s, format="%d-%B-%Y", errors="coerce")
+    )  # If that fails, try parsing with full month name and 4-digit year
     df[column_name] = dt
 
     assert df[column_name].notna().all()

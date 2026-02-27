@@ -8,6 +8,7 @@ from .preprocessing import (
 from .data_io_clean import (
     load_and_clean_nse_eq_master,
     load_and_clean_nse_etf_master,
+    load_and_clean_sgb,
 )
 
 __all__ = [
@@ -19,4 +20,5 @@ __all__ = [
     # Data IO + Cleaning
     "load_and_clean_nse_eq_master",
     "load_and_clean_nse_etf_master",
+    "load_and_clean_sgb",
 ]
