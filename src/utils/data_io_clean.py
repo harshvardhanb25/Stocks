@@ -58,3 +58,21 @@ def load_and_clean_sgb(path: str) -> pd.DataFrame:
     # Convert the close price to numeric
 
     return df
+
+
+def load_and_clean_broker(path: str) -> pd.DataFrame:
+    """Load and clean the broker data"""
+
+    # Load the csv containing broker data
+    df = pd.read_csv(path)
+
+    # Normalize column headers and fix any string values
+    df = df.pipe(normalize_column_headers).pipe(strip_string_values)
+
+    # remove rows with NaN in ISIN column from the broker df
+    df = df[df["isin"].notna()]
+    df["security_type"] = df["security_type"].replace(
+        {"EQUITY STOCK": "EQ", "MUTUAL FUND": "MF", "BONDS": "BOND"}
+    )
+
+    return df
