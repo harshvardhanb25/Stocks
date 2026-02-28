@@ -17,6 +17,9 @@ def fetch_current_prices(symbols: list[str]) -> pd.DataFrame:
     else:
         prices = prices["Close"].iloc[-1].to_dict()
 
-    prices_df = pd.DataFrame(list(prices.items()), columns=["symbol", "fetched_price"])
+    prices_df = pd.DataFrame(
+        list(prices.items()),
+        columns=["symbol", "fetched_price"],
+    )
 
     return prices_df
