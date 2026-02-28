@@ -3,10 +3,18 @@ from .api_io import fetch_current_prices
 
 
 def build_canonical_portfolio(
-    portfolio_df: pd.DataFrame, nse_eq_df: pd.DataFrame, nse_etf_df: pd.DataFrame
+    portfolio_df: pd.DataFrame,
+    nse_eq_df: pd.DataFrame,
+    nse_etf_df: pd.DataFrame,
+    sgb_df: pd.DataFrame,
 ) -> pd.DataFrame:
-    """Merge the user portfolio with the NSE masters for equities and etfs,
+    """Merge the user portfolio with the NSE masters for equities, etfs, and sgb,
     produce a single canonical df that is standardized for further analysis"""
+
+    # SGB data needs to be used from the csv since yfinance doesn't have proper support.
+    sgb_row = portfolio_df[portfolio_df.security_type == "BOND"].copy()
+    sgb_row["symbol"] = "SGBMAY28"
+    sgb_row["fetched_price"] = sgb_df["SGBMAY28"].iloc[-1]
 
     # Only keep equities and etfs for now, since we don't have a good way to get current prices for the other security types.
     eq_etf_df = portfolio_df[portfolio_df.security_type.isin(["EQ", "ETF"])].copy()
@@ -26,9 +34,14 @@ def build_canonical_portfolio(
     # and calculate the current value of each holding based on the quantity and fetched price.
     prices_df = fetch_current_prices(eq_etf_df["symbol"].unique().tolist())
     eq_etf_df = eq_etf_df.merge(prices_df, on="symbol", how="left")
-    eq_etf_df["current_value"] = eq_etf_df["quantity"] * eq_etf_df["fetched_price"]
 
-    eq_etf_df = eq_etf_df.loc[
+    # Combining EQ/ETF data with SGB data, and calculating current value and weights.
+    canon = pd.concat([eq_etf_df, sgb_row], ignore_index=True)
+    canon["current_value"] = canon["quantity"] * canon["fetched_price"]
+
+    canon["weight"] = canon["current_value"] / canon["current_value"].sum()
+
+    canon = canon.loc[
         :,
         [
             "isin",
@@ -38,7 +51,8 @@ def build_canonical_portfolio(
             "quantity",
             "fetched_price",
             "current_value",
+            "weight",
         ],
     ]
 
-    return eq_etf_df
+    return canon
