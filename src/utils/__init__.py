@@ -18,6 +18,7 @@ from .dataset_builder import (
 
 from .api_io import (
     fetch_current_prices,
+    fetch_historical_prices_n_years,
 )
 
 __all__ = [
@@ -35,4 +36,5 @@ __all__ = [
     "build_canonical_portfolio",
     # API IO
     "fetch_current_prices",
+    "fetch_historical_prices_n_years",
 ]
