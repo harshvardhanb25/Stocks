@@ -16,6 +16,10 @@ from .dataset_builder import (
     build_canonical_portfolio,
 )
 
+from .api_io import (
+    fetch_current_prices,
+)
+
 __all__ = [
     # Preprocessing
     "to_snake_case",
@@ -29,4 +33,6 @@ __all__ = [
     "load_and_clean_broker",
     # Dataset building
     "build_canonical_portfolio",
+    # API IO
+    "fetch_current_prices",
 ]
