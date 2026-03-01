@@ -14,6 +14,7 @@ from .data_io_clean import (
 
 from .dataset_builder import (
     build_canonical_portfolio,
+    build_historical_price_dataset,
 )
 
 from .api_io import (
@@ -34,6 +35,7 @@ __all__ = [
     "load_and_clean_broker",
     # Dataset building
     "build_canonical_portfolio",
+    "build_historical_price_dataset"
     # API IO
     "fetch_current_prices",
     "fetch_historical_prices_n_years",

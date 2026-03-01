@@ -56,6 +56,9 @@ def load_and_clean_sgb(path: str) -> pd.DataFrame:
     df = df.set_index("Date").sort_index()
 
     # Convert the close price to numeric
+    df["SGBMAY28"] = pd.to_numeric(df["SGBMAY28"], errors="coerce")
+
+    df = df.ffill()
 
     return df
 

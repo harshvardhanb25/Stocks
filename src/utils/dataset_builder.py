@@ -1,5 +1,5 @@
 import pandas as pd
-from .api_io import fetch_current_prices
+from .api_io import fetch_current_prices, fetch_historical_prices_n_years
 
 
 def build_canonical_portfolio(
@@ -32,7 +32,8 @@ def build_canonical_portfolio(
 
     # Fetch current prices for the equities and etfs in the portfolio using yfinance,
     # and calculate the current value of each holding based on the quantity and fetched price.
-    prices_df = fetch_current_prices(eq_etf_df["symbol"].unique().tolist())
+    print(eq_etf_df["symbol"].unique().tolist())
+    prices_df = fetch_current_prices(symbols=eq_etf_df["symbol"].unique().tolist())
     eq_etf_df = eq_etf_df.merge(prices_df, on="symbol", how="left")
 
     # Combining EQ/ETF data with SGB data, and calculating current value and weights.
@@ -56,3 +57,21 @@ def build_canonical_portfolio(
     ]
 
     return canon
+
+
+def build_historical_price_dataset(
+    canonical_portfolio: pd.DataFrame,
+    sgb_df: pd.DataFrame,
+    n_years: int,
+) -> pd.DataFrame:
+    """Build a historical price dataset for the equities, etfs, and sgb in the portfolio, for the past n years."""
+
+    # Fetch historical price data for the equities and etfs in the portfolio using yfinance. SGB data is already available from the csv.
+    eq_etf_historical = fetch_historical_prices_n_years(
+        symbols=canonical_portfolio["symbol"].tolist(), n_years=n_years
+    )
+
+    # Merge the historical price data for the equities and etfs with the sgb price data.
+    history_df = eq_etf_historical.join(sgb_df, how="left").ffill()
+
+    return history_df
