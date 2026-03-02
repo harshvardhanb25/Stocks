@@ -22,6 +22,11 @@ from .api_io import (
     fetch_historical_prices_n_years,
 )
 
+from .features import (
+    compute_daily_ret,
+    compute_annualized_mean_ret,
+)
+
 __all__ = [
     # Preprocessing
     "to_snake_case",
@@ -39,4 +44,7 @@ __all__ = [
     # API IO
     "fetch_current_prices",
     "fetch_historical_prices_n_years",
+    # Features
+    "compute_daily_ret",
+    "compute_annualized_mean_ret",
 ]
