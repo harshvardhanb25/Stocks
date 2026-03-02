@@ -25,6 +25,7 @@ from .api_io import (
 from .features import (
     compute_daily_ret,
     compute_annualized_mean_ret,
+    compute_individual_annualized_volatility,
 )
 
 __all__ = [
@@ -47,4 +48,5 @@ __all__ = [
     # Features
     "compute_daily_ret",
     "compute_annualized_mean_ret",
+    "compute_individual_annualized_volatility",
 ]
