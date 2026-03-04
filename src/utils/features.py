@@ -17,7 +17,7 @@ def compute_individual_annualized_volatility(ret: pd.DataFrame) -> pd.Series:
     return ret.std() * np.sqrt(252)
 
 
-def _clean_outliers_series(stock: pd.Series) -> pd.Series:
+def _clean_outliers_series(stock: pd.Series, k: float = 8) -> pd.Series:
     """
     MAD-based winsorization for a single return series.
     Only clips values beyond 8 robust sigma — genuine data artifacts only.
@@ -30,13 +30,10 @@ def _clean_outliers_series(stock: pd.Series) -> pd.Series:
     if not extreme_mask.any():
         return stock
 
-    threshold = 8 * robust_sigma
+    threshold = k * robust_sigma
     return stock.clip(lower=median - threshold, upper=median + threshold)
 
 
-def winsorize_returns(returns: pd.DataFrame) -> pd.DataFrame:
+def winsorize_returns(returns: pd.DataFrame, k: float = 8) -> pd.DataFrame:
     """Apply MAD-based winsorization independently to each security."""
-    return returns.apply(_clean_outliers_series)
-
-
-# TODO: Implement cov matrix logic
+    return returns.apply(_clean_outliers_series, k=k)
