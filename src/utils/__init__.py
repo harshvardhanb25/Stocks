@@ -29,6 +29,11 @@ from .features import (
     winsorize_returns,
 )
 
+from .universe import (
+    remove_securities,
+    remove_securities_leq_weight_w,
+)
+
 __all__ = [
     # Preprocessing
     "to_snake_case",
@@ -42,7 +47,7 @@ __all__ = [
     "load_and_clean_broker",
     # Dataset building
     "build_canonical_portfolio",
-    "build_historical_price_dataset"
+    "build_historical_price_dataset",
     # API IO
     "fetch_current_prices",
     "fetch_historical_prices_n_years",
@@ -51,4 +56,7 @@ __all__ = [
     "compute_annualized_mean_ret",
     "compute_individual_annualized_volatility",
     "winsorize_returns",
+    # Universe
+    "remove_securities",
+    "remove_securities_leq_weight_w",
 ]
