@@ -41,7 +41,16 @@ def convert_dates(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
     dt = dt.fillna(
         pd.to_datetime(s, format="%d-%B-%Y", errors="coerce")
     )  # If that fails, try parsing with full month name and 4-digit year
+    dt = dt.fillna(
+        pd.to_datetime(s, format="%d %b %Y", errors="coerce")
+    )  # If that fails, try parsing with spaces instead of dashes (this is for nifty indices)
     df[column_name] = dt
+
+    # DEBUG — remove after fixing
+    failed = df.loc[df[column_name].isna(), column_name]
+    if not failed.empty:
+        print(f"Failed to parse {len(failed)} rows:")
+        print(failed.unique())
 
     assert df[column_name].notna().all()
 
