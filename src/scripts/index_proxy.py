@@ -36,6 +36,9 @@ for index_name, out_file in INDEX_MAP.items():
         .drop_duplicates(subset=["date"])
         .set_index("date")
         .sort_index()
+        .rename(columns={"total_returns_index": index_name})
     )
+
+    combined = combined[[index_name]]
 
     combined.to_csv(os.path.join(config.PROCESSED_DATA_DIR, out_file))
