@@ -1,6 +1,6 @@
 # Stocks
 
-A personal quantitative finance toolkit for analysing and optimising an Indian equity portfolio. Built around NSE data and the `yfinance` API, the project handles everything from raw data ingestion and cleaning through return computation, outlier treatment, and index benchmark construction — with portfolio optimisation on the roadmap.
+A personal quantitative finance toolkit for analysing and optimising an Indian equity portfolio. Built around NSE data and the `yfinance` API, the project handles everything from raw data ingestion and cleaning through return computation, outlier treatment, and index benchmark construction with portfolio optimisation on the roadmap.
 
 ## Project Structure
 
