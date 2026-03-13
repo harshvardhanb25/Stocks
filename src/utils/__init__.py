@@ -3,6 +3,7 @@ from .preprocessing import (
     normalize_column_headers,
     strip_string_values,
     convert_dates,
+    fill_with_proxy,
 )
 
 from .data_io_clean import (
@@ -15,6 +16,8 @@ from .data_io_clean import (
 from .dataset_builder import (
     build_canonical_portfolio,
     build_historical_price_dataset,
+    build_index_price_dataset,
+    build_index_prices,
 )
 
 from .api_io import (
@@ -40,6 +43,7 @@ __all__ = [
     "normalize_column_headers",
     "strip_string_values",
     "convert_dates",
+    "fill_with_proxy",
     # Data IO + Cleaning
     "load_and_clean_nse_eq_master",
     "load_and_clean_nse_etf_master",
@@ -48,6 +52,8 @@ __all__ = [
     # Dataset building
     "build_canonical_portfolio",
     "build_historical_price_dataset",
+    "build_index_price_dataset",
+    "build_index_prices",
     # API IO
     "fetch_current_prices",
     "fetch_historical_prices_n_years",

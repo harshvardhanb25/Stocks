@@ -10,7 +10,7 @@ Stocks/
 │   ├── raw/                          # Raw CSV data files (gitignored)
 │   └── processed/                    # Processed / cleaned outputs
 ├── notebooks/
-│   ├── 00_exploration.ipynb          # Initial data exploration
+│   ├── 00_exploration.ipynb          # Initial data exploration and rough experimentation
 │   └── 01_data_cleaning.ipynb        # Data cleaning walkthroughs
 ├── src/
 │   ├── config.py                     # Centralised path config (raw & processed dirs)

@@ -63,6 +63,7 @@ def fill_with_proxy(
     proxy_map: dict[str, str],  # Map securities their their proxies {security: proxy}
 ) -> pd.DataFrame:
     filled = ret.copy()
+    proxy_aligned = proxy_rets.reindex(filled.index)
 
     for security, proxy in proxy_map.items():
         if security not in filled.columns:
@@ -73,6 +74,6 @@ def fill_with_proxy(
             continue
 
         mask = filled.index < first_valid_date
-        filled.loc[mask, security] = proxy_rets.loc[mask, proxy]
+        filled.loc[mask, security] = proxy_aligned.loc[mask, proxy]
 
     return filled
