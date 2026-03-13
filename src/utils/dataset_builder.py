@@ -1,5 +1,7 @@
 import pandas as pd
+import os
 from .api_io import fetch_current_prices, fetch_historical_prices_n_years
+import config
 
 
 def build_canonical_portfolio(
@@ -65,3 +67,29 @@ def build_historical_price_dataset(
     """Join the fetched historical prices for eq+etf and sgb to get complete
     price history dataset"""
     return eq_etf_historical.join(sgb_df, how="left").ffill()
+
+
+def build_index_prices(index_name: str, processed_path: str) -> pd.Series:
+    """Load pre-processed index price series from data/processed/"""
+    df = pd.read_csv(processed_path, index_col="Date", parse_dates=True)
+    return df.squeeze().rename(index_name)
+
+
+def build_index_price_dataset(
+    index_map: dict = config.INDEX_MAP,
+    processed_dir: str = config.PROCESSED_DATA_DIR,
+) -> pd.DataFrame:
+    """Combine all index price series into one DataFrame"""
+    series = []
+    for index_name, filename in index_map.items():
+        s = (
+            pd.read_csv(
+                os.path.join(processed_dir, filename),
+                index_col="date",
+                parse_dates=True,
+            )
+            .squeeze()
+            .rename(index_name)
+        )
+        series.append(s)
+    return pd.concat(series, axis=1)

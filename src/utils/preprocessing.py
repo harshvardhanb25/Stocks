@@ -55,3 +55,24 @@ def convert_dates(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
     assert df[column_name].notna().all()
 
     return df
+
+
+def fill_with_proxy(
+    ret: pd.DataFrame,  # Your actual returns df
+    proxy_rets: pd.DataFrame,  # Proxy returns to backfill
+    proxy_map: dict[str, str],  # Map securities their their proxies {security: proxy}
+) -> pd.DataFrame:
+    filled = ret.copy()
+
+    for security, proxy in proxy_map.items():
+        if security not in filled.columns:
+            continue
+
+        first_valid_date = filled[security].first_valid_index()
+        if first_valid_date is None:
+            continue
+
+        mask = filled.index < first_valid_date
+        filled.loc[mask, security] = proxy_rets.loc[mask, proxy]
+
+    return filled

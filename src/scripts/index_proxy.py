@@ -8,15 +8,9 @@ from utils.preprocessing import (
 import glob
 import os
 
-INDEX_MAP = {
-    "NIFTY 500": "NIFTY500.csv",
-    "NIFTY NEXT 50": "NEXT50.csv",
-    "NIFTY SMALLCAP 250": "SMALLCAP250.csv",
-}
-
 os.makedirs(config.PROCESSED_DATA_DIR, exist_ok=True)
 
-for index_name, out_file in INDEX_MAP.items():
+for index_name, out_file in config.INDEX_MAP.items():
     pattern = os.path.join(config.RAW_DATA_DIR, f"{index_name}_Historical_TR_*.csv")
     print(pattern)
     files = sorted(glob.glob(pattern))
