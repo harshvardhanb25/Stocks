@@ -1,6 +1,6 @@
 # Stocks
 
-A personal quantitative finance toolkit for analysing and optimising an Indian equity portfolio. Built around NSE data and the `yfinance` API, the project handles everything from raw data ingestion and cleaning through return computation, outlier treatment, and index benchmark construction with portfolio optimisation on the roadmap.
+A personal quantitative finance toolkit for analysing and optimising an Indian equity portfolio. Built around NSE data and the `yfinance` API, the project handles everything from raw data ingestion and cleaning through return computation, outlier treatment, and index benchmark construction — with portfolio optimisation on the roadmap.
 
 ## Project Structure
 
@@ -13,13 +13,14 @@ Stocks/
 │   ├── 00_exploration.ipynb          # Initial data exploration and rough experimentation
 │   └── 01_data_cleaning.ipynb        # Data cleaning walkthroughs
 ├── src/
-│   ├── config.py                     # Centralised path config (raw & processed dirs)
+│   ├── config.py                     # Centralised path config and index map
 │   ├── scripts/
 │   │   └── index_proxy.py            # Index benchmark builder (Nifty 500 / Next 50 / Smallcap 250)
 │   └── utils/
+│       ├── __init__.py               # Public API exports
 │       ├── api_io.py                 # yfinance data fetching
 │       ├── data_io_clean.py          # Raw data loaders & cleaners
-│       ├── dataset_builder.py        # Canonical portfolio & price history builders
+│       ├── dataset_builder.py        # Portfolio, price history & index dataset builders
 │       ├── features.py               # Return & volatility computations
 │       ├── preprocessing.py          # General-purpose data cleaning helpers
 │       └── universe.py               # Security universe management
@@ -40,11 +41,13 @@ Two `yfinance` wrappers for `.NS`-suffixed symbols:
 ### Portfolio Builder (`dataset_builder.py`)
 - `build_canonical_portfolio` — merges the broker portfolio with the NSE master data on ISIN, attaches live prices via `fetch_current_prices`, handles SGB separately (yfinance has no support), and outputs a single standardised dataframe with columns: `isin`, `symbol`, `security_type`, `sector`, `quantity`, `fetched_price`, `current_value`, and `weight`.
 - `build_historical_price_dataset` — joins the yfinance equity/ETF price history with the SGB CSV history into one aligned time-series dataframe.
+- `build_index_prices` — loads a single pre-processed index price series from `data/processed/` by name, returning a labelled `pd.Series`.
+- `build_index_price_dataset` — combines all three index price series (Nifty 500, Nifty Next 50, Nifty Smallcap 250) into one aligned `pd.DataFrame` using `config.INDEX_MAP`.
 
 ### Feature Engineering (`features.py`)
 - Daily percentage returns (`compute_daily_ret`)
 - Annualised mean return (`compute_annualized_mean_ret`, ×252)
-- Annualised volatility (×√252)
+- Annualised volatility per security (`compute_individual_annualized_volatility`, ×√252)
 - MAD-based winsorization (`winsorize_returns`) — clips extreme outliers beyond a configurable `k` robust-sigma threshold (default 8) per security independently, preserving genuine data while removing artefacts.
 
 ### Universe Management (`universe.py`)
@@ -60,7 +63,30 @@ Processes historical total-return CSV files for three NSE indices — **Nifty 50
 These cleaned index series serve as benchmarks for performance attribution and beta calculations.
 
 ### Configuration (`config.py`)
-Centralised path resolution for all raw **and processed** data files relative to the project root, so nothing is hardcoded in notebooks or scripts. Exposes `RAW_DATA_DIR` and `PROCESSED_DATA_DIR`.
+Centralised path resolution for all raw and processed data files relative to the project root, so nothing is hardcoded in notebooks or scripts. Exposes:
+- `RAW_DATA_DIR`, `PROCESSED_DATA_DIR` — base directory paths
+- `NSE_EQ_PATH`, `NSE_ETF_PATH`, `SGB_PATH`, `PORTFOLIO_PATH` — individual raw file paths
+- `INDEX_MAP` — mapping of index names to their processed CSV filenames, used by `build_index_price_dataset`
+
+### Public API (`utils/__init__.py`)
+All utility functions are re-exported from `src/utils` for clean imports in notebooks:
+
+```python
+from utils import (
+    # Preprocessing
+    to_snake_case, normalize_column_headers, strip_string_values, convert_dates, fill_with_proxy,
+    # Data IO + Cleaning
+    load_and_clean_nse_eq_master, load_and_clean_nse_etf_master, load_and_clean_sgb, load_and_clean_broker,
+    # Dataset building
+    build_canonical_portfolio, build_historical_price_dataset, build_index_price_dataset, build_index_prices,
+    # API IO
+    fetch_current_prices, fetch_historical_prices_n_years,
+    # Features
+    compute_daily_ret, compute_annualized_mean_ret, compute_individual_annualized_volatility, winsorize_returns,
+    # Universe
+    remove_securities, remove_securities_leq_weight_w,
+)
+```
 
 ## Data Sources
 
@@ -123,6 +149,7 @@ pre-commit install
 
 ## Tech Stack
 
-- **Python** — pandas, numpy, yfinance
+- **Python** — pandas, numpy, scipy, yfinance, cvxpy
+- **Visualisation** — matplotlib, seaborn
 - **Notebooks** — Jupyter
 - **Code Quality** — pre-commit hooks (ruff / black)
