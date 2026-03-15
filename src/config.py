@@ -17,4 +17,5 @@ INDEX_MAP = {
     "NIFTY 500": "NIFTY500.csv",
     "NIFTY NEXT 50": "NEXT50.csv",
     "NIFTY SMALLCAP 250": "SMALLCAP250.csv",
+    "NIFTY IT": "NIFTYIT.csv",
 }
