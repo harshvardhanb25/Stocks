@@ -15,6 +15,7 @@ Stocks/
 ├── src/
 │   ├── config.py                     # Centralised path config and index map
 │   ├── scripts/
+│   │   ├── fetch_tri_history.py      # Auto-fetches TRI history from niftyindices.com
 │   │   └── index_proxy.py            # Index benchmark builder (Nifty 500 / Next 50 / Smallcap 250)
 │   └── utils/
 │       ├── __init__.py               # Public API exports
@@ -38,11 +39,18 @@ Two `yfinance` wrappers for `.NS`-suffixed symbols:
 - `fetch_current_prices` — fetches the latest closing price for a list of symbols using a 1-day download with threading.
 - `fetch_historical_prices_n_years` — fetches `n` years of daily adjusted close history, forward-filling any gaps.
 
+### TRI History Fetcher (`scripts/fetch_tri_history.py`)
+Automatically downloads Total Return Index (TRI) history from [niftyindices.com](https://www.niftyindices.com) for all indices defined in `config.INDEX_MAP`. Key details:
+- Splits the requested date range (default: 10 years) into ≤364-day chunks to comply with the API's window limits.
+- Seeds session cookies by first hitting the niftyindices historical-data page, then POSTs to the `getTotalReturnIndexString` endpoint for each chunk.
+- Concatenates all chunks, normalises headers, strips whitespace, parses dates, deduplicates, sorts, and writes a clean CSV per index to `data/processed/`.
+- Run it directly (`python src/scripts/fetch_tri_history.py`) to refresh all benchmark CSVs in one go.
+
 ### Portfolio Builder (`dataset_builder.py`)
 - `build_canonical_portfolio` — merges the broker portfolio with the NSE master data on ISIN, attaches live prices via `fetch_current_prices`, handles SGB separately (yfinance has no support), and outputs a single standardised dataframe with columns: `isin`, `symbol`, `security_type`, `sector`, `quantity`, `fetched_price`, `current_value`, and `weight`.
 - `build_historical_price_dataset` — joins the yfinance equity/ETF price history with the SGB CSV history into one aligned time-series dataframe.
 - `build_index_prices` — loads a single pre-processed index price series from `data/processed/` by name, returning a labelled `pd.Series`.
-- `build_index_price_dataset` — combines all three index price series (Nifty 500, Nifty Next 50, Nifty Smallcap 250) into one aligned `pd.DataFrame` using `config.INDEX_MAP`.
+- `build_index_price_dataset` — combines all index price series defined in `config.INDEX_MAP` into one aligned `pd.DataFrame`.
 
 ### Feature Engineering (`features.py`)
 - Daily percentage returns (`compute_daily_ret`)
@@ -55,18 +63,27 @@ Two `yfinance` wrappers for `.NS`-suffixed symbols:
 - `remove_securities_leq_weight_w` — convenience wrapper that automatically identifies and removes all securities whose portfolio weight is at or below a threshold `w` (default 0.5%), useful for trimming negligible positions before optimisation.
 
 ### Index Benchmark Builder (`scripts/index_proxy.py`)
-Processes historical total-return CSV files for three NSE indices — **Nifty 500**, **Nifty Next 50**, and **Nifty Smallcap 250** — downloaded from NSE India. For each index, the script:
+Processes historical total-return CSV files for NSE indices downloaded from NSE India. For each index, the script:
 - Globs all matching raw CSV files and concatenates them.
 - Normalises headers, strips whitespace, and parses dates (with debug logging for failed parses).
 - Deduplicates and sorts by date, then writes a clean, date-indexed CSV to `data/processed/`.
 
-These cleaned index series serve as benchmarks for performance attribution and beta calculations.
+> **Note:** `fetch_tri_history.py` supersedes the manual CSV workflow handled by `index_proxy.py` for most use cases.
 
 ### Configuration (`config.py`)
 Centralised path resolution for all raw and processed data files relative to the project root, so nothing is hardcoded in notebooks or scripts. Exposes:
 - `RAW_DATA_DIR`, `PROCESSED_DATA_DIR` — base directory paths
 - `NSE_EQ_PATH`, `NSE_ETF_PATH`, `SGB_PATH`, `PORTFOLIO_PATH` — individual raw file paths
-- `INDEX_MAP` — mapping of index names to their processed CSV filenames, used by `build_index_price_dataset`
+- `INDEX_MAP` — mapping of index names to their processed CSV filenames, used by `build_index_price_dataset` and `fetch_tri_history.py`
+
+Currently tracked indices:
+
+| Index Name | Processed File |
+|---|---|
+| `NIFTY 500` | `NIFTY500.csv` |
+| `NIFTY NEXT 50` | `NEXT50.csv` |
+| `NIFTY SMALLCAP 250` | `SMALLCAP250.csv` |
+| `NIFTY IT` | `NIFTYIT.csv` |
 
 ### Public API (`utils/__init__.py`)
 All utility functions are re-exported from `src/utils` for clean imports in notebooks:
@@ -96,12 +113,9 @@ from utils import (
 | `nse_etf_master.csv` | `data/raw/` | NSE ETF master list |
 | `SGBMAY28.csv` | `data/raw/` | Sovereign Gold Bond (May 2028) price history |
 | `current_portfolio.csv` | `data/raw/` | Broker-exported portfolio holdings |
-| `NIFTY 500_Historical_TR_*.csv` | `data/raw/` | Nifty 500 total-return index history |
-| `NIFTY NEXT 50_Historical_TR_*.csv` | `data/raw/` | Nifty Next 50 total-return index history |
-| `NIFTY SMALLCAP 250_Historical_TR_*.csv` | `data/raw/` | Nifty Smallcap 250 total-return index history |
-| `NIFTY500.csv`, `NEXT50.csv`, `SMALLCAP250.csv` | `data/processed/` | Cleaned, deduplicated index series |
+| `NIFTY500.csv`, `NEXT50.csv`, `SMALLCAP250.csv`, `NIFTYIT.csv` | `data/processed/` | Cleaned, deduplicated TRI index series |
 
-> Raw data files are excluded from version control via `.gitignore`.
+> Raw data files are excluded from version control via `.gitignore`. Processed index CSVs are auto-generated by `fetch_tri_history.py`.
 
 ## Setup
 
@@ -111,6 +125,9 @@ pip install -e .
 
 # Install pre-commit hooks
 pre-commit install
+
+# Fetch/refresh all TRI benchmark data
+python src/scripts/fetch_tri_history.py
 ```
 
 ## Roadmap
