@@ -32,7 +32,7 @@ HEADERS = {
 def date_chunks(
     start: date, end: date, chunk_days: int = CHUNK_DAYS
 ) -> list[tuple[date, date]]:
-    """Split a date range into non-overlapping windows of at most chunk_days"""
+    """Split a date range into non-overlapping windows of at most chunk_days."""
     chunks = []
     cursor = start
     while cursor <= end:
@@ -43,15 +43,16 @@ def date_chunks(
 
 
 def fetch_tri_history(index_name: str, n_years: int = 10) -> pd.DataFrame:
-    """Fetch TRI history for a niftyindices.com index, chunked into sub-year windows"""
+    """Fetch TRI history for a niftyindices.com index, chunked into sub-year windows."""
     end_date = date.today()
     start_date = end_date - relativedelta(years=n_years)
 
     session = requests.Session()
+    # Seed cookies by hitting the historical data page first
     session.get(
         f"{BASE_URL}/reports/historical-data",
         headers={"User-Agent": HEADERS["User-Agent"]},
-    )  # seed cookies from the right page
+    )
 
     chunks = date_chunks(start_date, end_date)
     frames = []
@@ -70,6 +71,7 @@ def fetch_tri_history(index_name: str, n_years: int = 10) -> pd.DataFrame:
         )
         resp.raise_for_status()
 
+        # API returns JSON with escaped JSON in "d"
         frames.append(pd.DataFrame(json.loads(json.loads(resp.text)["d"])))
 
         time.sleep(0.5)

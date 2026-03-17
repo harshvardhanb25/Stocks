@@ -37,10 +37,11 @@ def build_canonical_portfolio(
     prices_df = fetch_current_prices(symbols=eq_etf_df["symbol"].unique().tolist())
     eq_etf_df = eq_etf_df.merge(prices_df, on="symbol", how="left")
 
-    # Combining EQ/ETF data with SGB data, and calculating current value and weights.
+    # Combine EQ/ETF data with SGB data, and calculate current value and weights.
     canon = pd.concat([eq_etf_df, sgb_row], ignore_index=True)
     canon["current_value"] = canon["quantity"] * canon["fetched_price"]
 
+    # Normalize weights so they sum to 1.
     canon["weight"] = canon["current_value"] / canon["current_value"].sum()
 
     canon = canon.loc[
@@ -66,6 +67,7 @@ def build_historical_price_dataset(
 ) -> pd.DataFrame:
     """Join the fetched historical prices for eq+etf and sgb to get complete
     price history dataset"""
+    # Forward-fill SGB prices so missing dates are aligned with the eq/etf history.
     return eq_etf_historical.join(sgb_df, how="left").ffill()
 
 

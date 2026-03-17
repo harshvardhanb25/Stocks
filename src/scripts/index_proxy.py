@@ -10,6 +10,7 @@ import os
 
 os.makedirs(config.PROCESSED_DATA_DIR, exist_ok=True)
 
+# For each index, find all raw CSV chunks and merge them into a single cleaned series.
 for index_name, out_file in config.INDEX_MAP.items():
     pattern = os.path.join(config.RAW_DATA_DIR, f"{index_name}_Historical_TR_*.csv")
     print(pattern)
@@ -19,8 +20,10 @@ for index_name, out_file in config.INDEX_MAP.items():
         print(f"no files found for: {index_name}")
         continue
 
+    # Read all chunk files for this index.
     dfs = [pd.read_csv(file) for file in files]
 
+    # Concatenate, clean up, and keep only the index series.
     combined = (
         pd.concat(dfs, ignore_index=True)
         .dropna(subset="Date")
