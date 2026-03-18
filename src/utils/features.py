@@ -34,6 +34,16 @@ def _clean_outliers_series(stock: pd.Series, k: float = 8) -> pd.Series:
     return stock.clip(lower=median - threshold, upper=median + threshold)
 
 
-def winsorize_returns(returns: pd.DataFrame, k: float = 8) -> pd.DataFrame:
+def winsorize_returns(ret: pd.DataFrame, k: float = 8) -> pd.DataFrame:
     """Apply MAD-based winsorization independently to each security."""
-    return returns.apply(_clean_outliers_series, k=k)
+    return ret.apply(_clean_outliers_series, k=k)
+
+
+def compute_covariance_matrix(ret: pd.DataFrame) -> pd.DataFrame:
+    """Compute the annualized covariance matrix of returns."""
+    return ret.cov() * 252
+
+
+def compute_correlation_matrix(ret: pd.DataFrame) -> pd.DataFrame:
+    """Compute the correlation matrix of returns."""
+    return ret.corr()

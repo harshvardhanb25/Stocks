@@ -30,6 +30,8 @@ from .features import (
     compute_annualized_mean_ret,
     compute_individual_annualized_volatility,
     winsorize_returns,
+    compute_covariance_matrix,
+    compute_correlation_matrix,
 )
 
 from .universe import (
@@ -62,6 +64,7 @@ __all__ = [
     "compute_annualized_mean_ret",
     "compute_individual_annualized_volatility",
     "winsorize_returns",
+    "compute_covariance_matrix" "compute_correlation_matrix",
     # Universe
     "remove_securities",
     "remove_securities_leq_weight_w",
