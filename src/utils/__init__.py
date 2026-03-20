@@ -39,6 +39,12 @@ from .universe import (
     remove_securities_leq_weight_w,
 )
 
+from portfolio import (
+    portfolio_variance,
+    portfolio_volatility,
+    portfolio_return,
+)
+
 __all__ = [
     # Preprocessing
     "to_snake_case",
@@ -64,8 +70,13 @@ __all__ = [
     "compute_annualized_mean_ret",
     "compute_individual_annualized_volatility",
     "winsorize_returns",
-    "compute_covariance_matrix" "compute_correlation_matrix",
+    "compute_covariance_matrix",
+    "compute_correlation_matrix",
     # Universe
     "remove_securities",
     "remove_securities_leq_weight_w",
+    # Portfolio
+    "portfolio_variance",
+    "portfolio_volatility",
+    "portfolio_return",
 ]

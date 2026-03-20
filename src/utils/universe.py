@@ -1,3 +1,5 @@
+from typing import Optional, Union
+
 import pandas as pd
 
 
@@ -20,7 +22,7 @@ def _remove_from_returns(
 def remove_securities(
     canon_df: pd.DataFrame,
     ret: pd.DataFrame,
-    symbols: str | list[str] = None,
+    symbols: Union[str, list[str], None] = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Remove one or more securities from both canonical portfolio and return series."""
     if isinstance(symbols, str):
