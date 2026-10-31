@@ -1,6 +1,6 @@
 # Stocks
 
-A personal quantitative finance toolkit for analysing and optimising an Indian equity portfolio. Built around NSE data and the `yfinance` API, the project handles everything from raw data ingestion and cleaning through return computation, outlier treatment, and index benchmark construction — with portfolio optimisation on the roadmap.
+A portfolio analytics and optimization toolkit being refactored from an NSE- and broker-specific prototype into a provider-independent Python package. The new package establishes the reusable input models, price-data contract, and portfolio calculations before adding global ticker resolution, optimization workflows, or the Streamlit interface.
 
 ## Project Structure
 
@@ -13,11 +13,16 @@ Stocks/
 │   ├── 00_exploration.ipynb          # Initial data exploration and rough experimentation
 │   └── 01_data_cleaning.ipynb        # Data cleaning walkthroughs
 ├── src/
+│   ├── portfolio_optimizer/          # Provider-independent toolkit package
+│   │   ├── core/                     # Return, risk, and portfolio calculations
+│   │   ├── data/                     # Cleaning and price-data contracts
+│   │   │   └── providers.py           # Historical price provider interface
+│   │   └── models.py                 # Ticker-and-quantity holdings models
 │   ├── config.py                     # Centralised path config and index map
 │   ├── scripts/
 │   │   ├── fetch_tri_history.py      # Auto-fetches TRI history from niftyindices.com
 │   │   └── index_proxy.py            # Index benchmark builder (Nifty 500 / Next 50 / Smallcap 250)
-│   └── utils/
+│   └── utils/                        # Legacy NSE/broker workflow and compatibility imports
 │       ├── __init__.py               # Public API exports
 │       ├── api_io.py                 # yfinance data fetching
 │       ├── data_io_clean.py          # Raw data loaders & cleaners
@@ -25,9 +30,14 @@ Stocks/
 │       ├── features.py               # Return & volatility computations
 │       ├── preprocessing.py          # General-purpose data cleaning helpers
 │       └── universe.py               # Security universe management
+├── tests/                            # Tests for the extracted core
 ├── .pre-commit-config.yaml
 └── pyproject.toml
 ```
+
+### Package Boundary
+
+`portfolio_optimizer` contains ticker-and-quantity models, provider-independent return and risk calculations, generic tabular cleaning helpers, and a historical-price provider interface. The old `utils` modules remain available to keep the NSE/broker notebooks working, but they are not the new toolkit API. No provider implementation currently resolves worldwide tickers, and currency conversion, optimization workflows, and the Streamlit UI remain future work.
 
 ## What's Built So Far
 
@@ -121,7 +131,10 @@ from utils import (
 
 ```bash
 # Install dependencies (requires Python 3.11+)
-pip install -e .
+pip install -e ".[dev]"
+
+# Run tests
+python -m pytest
 
 # Install pre-commit hooks
 pre-commit install

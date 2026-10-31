@@ -39,7 +39,7 @@ from .universe import (
     remove_securities_leq_weight_w,
 )
 
-from portfolio import (
+from .portfolio import (
     portfolio_variance,
     portfolio_volatility,
     portfolio_return,
