@@ -139,6 +139,9 @@ python -m pytest
 # Install pre-commit hooks
 pre-commit install
 
+# Install dependencies used by the legacy yfinance notebooks
+pip install -e ".[legacy,notebooks]"
+
 # Install optional dependencies for India-specific TRI data scripts
 pip install -e ".[india-data]"
 
@@ -149,7 +152,7 @@ portfolio-fetch-tri-history
 portfolio-build-index-proxies
 ```
 
-The India-data configuration defaults to the current working directory. Set `PORTFOLIO_PROJECT_ROOT` when running the commands from elsewhere.
+The India-data configuration searches the current directory and its parents for the nearest `pyproject.toml`. Set `PORTFOLIO_PROJECT_ROOT` to override that root.
 
 ## Roadmap
 

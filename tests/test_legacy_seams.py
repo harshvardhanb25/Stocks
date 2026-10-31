@@ -4,7 +4,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import pytest
-import requests
 
 from portfolio_optimizer import config as package_config
 from utils.api_io import fetch_historical_prices_n_years
@@ -82,16 +81,29 @@ def test_empty_current_price_request_keeps_current_price_schema():
 def test_package_config_has_legacy_project_defaults():
     import config as legacy_config
 
-    assert package_config.PROJECT_ROOT == Path.cwd()
+    assert (package_config.PROJECT_ROOT / "pyproject.toml").is_file()
     assert legacy_config.INDEX_MAP == package_config.INDEX_MAP
     assert legacy_config.PROCESSED_DATA_DIR == package_config.PROCESSED_DATA_DIR
 
 
-def test_packaged_india_scripts_are_safe_to_import(monkeypatch):
-    def reject_network(*args, **kwargs):
-        raise AssertionError("Importing a script must not make network requests")
+def test_project_root_resolves_from_notebooks_directory(monkeypatch):
+    repository_root = Path(__file__).resolve().parents[1]
+    monkeypatch.delenv("PORTFOLIO_PROJECT_ROOT", raising=False)
+    monkeypatch.chdir(repository_root / "notebooks")
 
-    monkeypatch.setattr(requests, "Session", reject_network)
+    reloaded_config = importlib.reload(package_config)
+    assert reloaded_config.PROJECT_ROOT == repository_root
+
+
+def test_project_root_override_takes_precedence(tmp_path, monkeypatch):
+    override = tmp_path / "custom-root"
+    override.mkdir()
+    monkeypatch.setenv("PORTFOLIO_PROJECT_ROOT", str(override))
+
+    assert package_config._resolve_project_root() == override
+
+
+def test_packaged_india_scripts_are_safe_to_import():
     modules = [
         "portfolio_optimizer.adapters.india.fetch_tri_history",
         "portfolio_optimizer.adapters.india.index_proxy",

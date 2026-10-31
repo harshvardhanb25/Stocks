@@ -1,5 +1,4 @@
 import pandas as pd
-import yfinance as yf
 
 
 def fetch_current_prices(symbols: list[str]) -> pd.DataFrame:
@@ -15,6 +14,8 @@ def fetch_current_prices(symbols: list[str]) -> pd.DataFrame:
     # If the symbols list is empty, return an empty DataFrame with the correct columns
     if not symbols:
         return pd.DataFrame(columns=["symbol", "fetched_price"])
+
+    import yfinance as yf
 
     prices = yf.download(
         tickers=symbols, period="1d", progress=False, threads=True
@@ -46,6 +47,8 @@ def fetch_historical_prices_n_years(
     # An empty request should retain the historical price-table shape.
     if not symbols:
         return pd.DataFrame(index=pd.DatetimeIndex([], name="Date"))
+
+    import yfinance as yf
 
     # Fetch historical price data for the given symbols and time period using yfinance.
     close_history_df = yf.download(

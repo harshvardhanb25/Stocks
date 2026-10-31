@@ -3,8 +3,6 @@ import time
 from datetime import date, timedelta
 
 import pandas as pd
-import requests
-from dateutil.relativedelta import relativedelta
 
 from portfolio_optimizer import config
 from portfolio_optimizer.data.cleaning import (
@@ -46,6 +44,9 @@ def date_chunks(
 
 def fetch_tri_history(index_name: str, n_years: int = 10) -> pd.DataFrame:
     """Fetch TRI history for a niftyindices.com index in bounded date windows."""
+    import requests
+    from dateutil.relativedelta import relativedelta
+
     if n_years <= 0:
         raise ValueError("n_years must be positive")
 

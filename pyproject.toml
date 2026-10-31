@@ -9,22 +9,26 @@ description = "Provider-independent portfolio analytics and optimization toolkit
 requires-python = ">=3.11"
 
 dependencies = [
-    "cvxpy>=1.8.1",
-    "ipython>=8.12.3",
-    "matplotlib>=3.10.8",
     "numpy>=2.4.2",
     "pandas>=3.0.1",
-    "scipy>=1.17.1",
-    "seaborn>=0.13.2",
-    "yfinance>=1.1.0",
 ]
 
 [project.optional-dependencies]
+legacy = [
+    "yfinance>=1.1.0",
+]
+notebooks = [
+    "cvxpy>=1.8.1",
+    "scipy>=1.17.1",
+    "matplotlib>=3.10.8",
+    "seaborn>=0.13.2",
+    "ipython>=8.12.3",
+    "jupyter",
+]
 dev = [
     "pytest",
     "black",
     "pre-commit",
-    "jupyter"
 ]
 india-data = [
     "python-dateutil>=2.8",
