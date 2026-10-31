@@ -43,9 +43,9 @@ def fetch_historical_prices_n_years(
     # Filter the symbols to only include those that end with .NS.
     symbols = list(filter(lambda x: (x.endswith(".NS")), symbols))
 
-    # If the symbols list is empty, return an empty DataFrame with the correct columns
+    # An empty request should retain the historical price-table shape.
     if not symbols:
-        return pd.DataFrame(columns=["symbol", "fetched_price"])
+        return pd.DataFrame(index=pd.DatetimeIndex([], name="Date"))
 
     # Fetch historical price data for the given symbols and time period using yfinance.
     close_history_df = yf.download(

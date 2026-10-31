@@ -6,6 +6,7 @@ from .core import (
     correlation_matrix,
     covariance_matrix,
     daily_returns,
+    fill_with_proxy,
     portfolio_return,
     portfolio_variance,
     portfolio_volatility,

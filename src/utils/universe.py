@@ -38,6 +38,6 @@ def remove_securities_leq_weight_w(
     canon_df: pd.DataFrame, ret: pd.DataFrame, w: float = 0.005
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Drop securities whose weight is less than or equal to threshold `w`."""
-    symbols = canon_df[canon_df["weight"] <= w].index.to_list()
+    symbols = canon_df.loc[canon_df["weight"] <= w, "symbol"].tolist()
 
     return remove_securities(canon_df=canon_df, ret=ret, symbols=symbols)

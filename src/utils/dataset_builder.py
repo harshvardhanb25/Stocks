@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 from .api_io import fetch_current_prices, fetch_historical_prices_n_years
-import config
+from portfolio_optimizer import config
 
 
 def build_canonical_portfolio(
@@ -73,7 +73,7 @@ def build_historical_price_dataset(
 
 def build_index_prices(index_name: str, processed_path: str) -> pd.Series:
     """Load pre-processed index price series from data/processed/"""
-    df = pd.read_csv(processed_path, index_col="Date", parse_dates=True)
+    df = pd.read_csv(processed_path, index_col="date", parse_dates=True)
     return df.squeeze().rename(index_name)
 
 

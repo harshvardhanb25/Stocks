@@ -26,5 +26,14 @@ dev = [
     "pre-commit",
     "jupyter"
 ]
+india-data = [
+    "python-dateutil>=2.8",
+    "requests>=2.31",
+]
+
+[project.scripts]
+portfolio-fetch-tri-history = "portfolio_optimizer.adapters.india.fetch_tri_history:main"
+portfolio-build-index-proxies = "portfolio_optimizer.adapters.india.index_proxy:main"
+
 [tool.setuptools.packages.find]
 where = ["src"] 

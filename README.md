@@ -17,11 +17,11 @@ Stocks/
 │   │   ├── core/                     # Return, risk, and portfolio calculations
 │   │   ├── data/                     # Cleaning and price-data contracts
 │   │   │   └── providers.py           # Historical price provider interface
+│   │   ├── adapters/india/           # Packaged India-specific index adapters and commands
+│   │   ├── config.py                 # Config for retained India-data workflows
 │   │   └── models.py                 # Ticker-and-quantity holdings models
-│   ├── config.py                     # Centralised path config and index map
-│   ├── scripts/
-│   │   ├── fetch_tri_history.py      # Auto-fetches TRI history from niftyindices.com
-│   │   └── index_proxy.py            # Index benchmark builder (Nifty 500 / Next 50 / Smallcap 250)
+│   ├── config.py                     # Compatibility import for old notebooks
+│   ├── scripts/                      # Compatibility launchers for packaged commands
 │   └── utils/                        # Legacy NSE/broker workflow and compatibility imports
 │       ├── __init__.py               # Public API exports
 │       ├── api_io.py                 # yfinance data fetching
@@ -139,9 +139,17 @@ python -m pytest
 # Install pre-commit hooks
 pre-commit install
 
+# Install optional dependencies for India-specific TRI data scripts
+pip install -e ".[india-data]"
+
 # Fetch/refresh all TRI benchmark data
-python src/scripts/fetch_tri_history.py
+portfolio-fetch-tri-history
+
+# Build index files from previously downloaded raw CSVs
+portfolio-build-index-proxies
 ```
+
+The India-data configuration defaults to the current working directory. Set `PORTFOLIO_PROJECT_ROOT` when running the commands from elsewhere.
 
 ## Roadmap
 
@@ -182,4 +190,4 @@ python src/scripts/fetch_tri_history.py
 - **Python** — pandas, numpy, scipy, yfinance, cvxpy
 - **Visualisation** — matplotlib, seaborn
 - **Notebooks** — Jupyter
-- **Code Quality** — pre-commit hooks (ruff / black)
+- **Code Quality** — pre-commit hooks (Black)
